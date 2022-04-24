@@ -3,7 +3,8 @@ import json
 import csv
 import os
 
-API_KEY= 'e446bc89015229cf337e16b0849d506c'
+# Set your API key as enviroment variable. Key should be 'TMDB_KEY'.
+API_KEY= os.getenv('TMDB_KEY')
 
 def sanitize(movie_name):
     """
