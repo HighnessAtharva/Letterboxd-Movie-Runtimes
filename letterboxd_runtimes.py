@@ -18,7 +18,8 @@ def get_movie_id(API_KEY, movie_name, movie_year):
     Takes in a movie name and release year, queries it using the API and return the movieID.
     """
     movie_name=sanitize(movie_name)
-    query=f'https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={movie_name}&primary_release_year={movie_year}'
+    query=f'https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={movie_name}'
+    # query=f'https://api.themoviedb.org/3/search/movie?api_key={API_KEY}&query={movie_name}&primary_release_year={movie_year}'
     # print(query)
     response =  requests.get(query)
     if response.status_code != 200:
@@ -45,7 +46,7 @@ def read_csv(csv_file):
     Takes in the name of the CSV file. Reads the file and displays the formatted contents. Shows a total row count at the end.
     """
     try:
-        with open(csv_file) as csv_file:
+        with open(csv_file, encoding="utf8") as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             line_count = 0
             for row in csv_reader:
@@ -67,13 +68,13 @@ def calculate_runtime(csv_file):
     """
     try:
         # Read the CSV file
-        with open(csv_file) as csv_file:
+        with open(csv_file, encoding="utf8") as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             line_count = 0  
             total_runtime_minutes = 0
             
             # Create a new CSV file to write the calculated runtime to
-            with open('letterboxd_runtimes.csv', mode='w', newline='') as csv_file:   
+            with open('letterboxd_runtimes.csv', encoding="utf8", mode='w', newline='') as csv_file:   
                 # Set the column headers as the first row in the new CSV file
                 fieldnames = ['MovieName', 'Runtime (in minutes)']
                 # Write the column headers to the new CSV file
