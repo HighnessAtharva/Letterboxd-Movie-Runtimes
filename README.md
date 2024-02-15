@@ -1,5 +1,5 @@
 # Letterboxd-Movie-Runtimes
-A Python CLI Script that gets the total runtime of the letterboxd movies logged from your account. 
+A Python CLI Script that gets the total runtime of the letterboxd movies logged from your account. Can also be used to get the total runtime of watchlisted movies, instructions below.
 
 # Usage
 
@@ -9,8 +9,14 @@ https://www.themoviedb.org/settings/api
 ## Export Your Letterboxd Data
 Go to https://letterboxd.com/settings/data/, click on the `Import and Export` tab and `Export your data`.Extract the downloaded zip and place the `watched.csv` file in the same folder as that of the Python Script.
 
+If you would like to get the runtime of your watchlisted movies instead, just copy the `watchlist.csv` file and place it in the same folder as the Python script, but rename it to `watched.csv` before continuing.
+
 ## Run the Python Script
 - IMPORTANT! - Set your `TMDB_KEY` as the environment variable before running the Python Script.
+- To do this you can used the following command on
+    - bash or zsh: `export TMDB_KEY="your_api_key"`
+    - Windows cmd prompt: `setx TMDB_KEY "your_api_key"`
+    - Powershell: `$env:TMDB_KEY = "your_api_key"`
 
 - Run the script from your CLI as demonstrated in the image below
 ![lbx1](https://user-images.githubusercontent.com/68660002/180614312-2e3c7b88-07bb-45ed-8e15-e83630dfedcd.JPG)

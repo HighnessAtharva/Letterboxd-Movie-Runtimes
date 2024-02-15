@@ -2,9 +2,10 @@ import requests
 import json
 import csv
 import os
+import time
 
 # Set your API key as enviroment variable. Key should be 'TMDB_KEY' or replace it directly here instead of os.getenv()
-API_KEY= os.getenv('TMDB_KEY')
+API_KEY=os.getenv('TMDB_KEY')
 
 def sanitize(movie_name):
     """
@@ -24,12 +25,16 @@ def get_movie_id(API_KEY, movie_name, movie_year):
     response =  requests.get(query)
     if response.status_code != 200:
         return ("error")
-    return response.json()['results'][0]['id']
-    
+    results = response.json()['results']
+    if len(results) > 0:
+        return results[0]['id']
+    else:
+        return None
+        
 
 def get_runtime(API_KEY, movie_id):
     """
-    Takes in a movieID and returns it's movie name and runtime in minutes.
+    Takes in a movieID and returns its movie name and runtime in minutes.
     """
     query=f'https://api.themoviedb.org/3/movie/{movie_id}?api_key={API_KEY}&language=en-US'
     # print(query)
@@ -86,13 +91,19 @@ def calculate_runtime(csv_file):
                     if line_count == 0:
                         print('Calculating The Runtime...')
                         print('-----------------------------------------------------')
+                        total_start = time.time()
                     else:
+                        start_time = time.time()
                         # Row 1 is Movie Title from the CSV file.
                         name=row[1] 
                         # Row 2 is Movie Release Year from the CSV file.
                         release=row[2]
                         # Pass in the details and grab the movie ID
                         movie_id=get_movie_id(API_KEY, name, release)
+
+                        if movie_id is None:
+                            print(f'Error: {name} not found.')
+                            break
                         # Get the movie name and runtime by passing the movie ID
                         movie_name, runtime=get_runtime(API_KEY, movie_id)
                         # update the total runtime in minutes by adding the runtime of each movie
@@ -102,20 +113,26 @@ def calculate_runtime(csv_file):
                         hours = total_runtime_minutes // 60
                         minutes = total_runtime_minutes % 60
                         total_runtime_hours = f'{hours}H {minutes}M'
+                        total_runtime_days = f'{hours//24}D {hours%24}H {minutes}M'
 
                         print(f'{movie_name} - {runtime}')
-                        print(f'Total Runtime till now: {total_runtime_minutes} minutes OR {total_runtime_hours}')
+                        print(f'Total Runtime till now: {total_runtime_minutes} minutes OR {total_runtime_hours} OR {total_runtime_days}.')
                         
 
                         # Write the movie name and runtime to the CSV file. Format is Dictionary and key value pairs.
                         print('Writing to file letterboxd_runtimes.csv...')    
                         writer.writerow({'MovieName': movie_name, 'Runtime (in minutes)': runtime})
                          
+                        end_time = time.time()
+                        print(f'Time taken: {end_time - start_time:.4f}s')
+
                         print('\n-----------------------------------------------------\n')
                     line_count += 1
         print("SUCCESS!")
         print(f'Finished Calculating Runtime of  {line_count} movies.')
-        print(f'Total Runtime Report: {total_runtime_minutes} minutes OR {total_runtime_hours}')
+        print(f'Total Runtime Report: {total_runtime_minutes} minutes OR {total_runtime_hours} OR {total_runtime_days}.')
+        total_end = time.time()
+        print(f'Total Time taken to process: {total_end - total_start:.4f}s')
     except ValueError as e:
         print(e)
     except FileNotFoundError:
